@@ -2,7 +2,7 @@ import React from "react";
 import './tuits.css';
 import Tuit from "./tuit";
 
-const Tuits = ({tuits, deleteTuit}) => {
+export const Tuits = ({tuits = [], deleteTuit}) => {
     return (
         <div>
             <ul className="ttr-tuits list-group">

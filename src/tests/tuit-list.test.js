@@ -5,7 +5,7 @@ import {findAllTuits} from "../services/tuits-service";
 
 const MOCKED_TUITS = [
     {tuit: 'ellen_ripley tuit', postedOn: 'Dec 25, 2021', postedBy: 'ellen_ripley', _id: "789"},
-    {tuit: 'sarah_conor tuit', postedOn: 'Dec 26, 2021', postedBy: 'sarah_conor', _id: "678"},
+    {tuit: 'sarah_conor tuit', postedOn: 'Dec 26, 2021', postedBy: 'sarah_conor', _id: "678"}
 ];
 
 test('tuit list renders static tuit array', () => {
