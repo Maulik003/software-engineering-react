@@ -1,7 +1,16 @@
-import {createUser, deleteUsersByUsername, findAllUsers, findUserById} from "../services/users-service";
+import {
+    createUser,
+    deleteUsersByUsername,
+    findAllUsers,
+    findUserById,
+    findUserByCredentials
+} from "../services/users-service";
 import {createTuit, deleteTuit, findAllTuits, findTuitById, updateTuit} from "../services/tuits-service";
 
 describe('can create tuit with REST API', () => {
+    // var newTuit to have it accessed globally
+    var newTuit;
+
     // sample user to insert
     const ripley = {
         username: 'ellenripley',
@@ -12,26 +21,27 @@ describe('can create tuit with REST API', () => {
     // sample tuit to insert
     const sampleTuit = {
         tuit: "test tuit",
-        postedOn: "2021-12-25T05:00:00.000Z",
-        postedBy: "ellenripley"
+        postedOn: "2021-12-25T05:00:00.000Z"
     };
 
     // setup test before running test
     beforeAll(() => {
-        // remove any/all users to make sure we create it in the test
-        return deleteUsersByUsername(ripley.username);
+        // create user
+        return createUser(ripley);
     })
 
     // clean up after test runs
-    afterAll(() => {
+    afterAll(async () => {
         // remove any data we created
-        return deleteUsersByUsername(ripley.username);
+        await deleteTuit(newTuit._id);
+        return await deleteUsersByUsername(ripley.username);
     })
 
     test('can insert new tuit with REST API', async () => {
         // insert new user in the database
-        const newUser = await createUser(ripley);
-        const newTuit = await createTuit(newUser._id, sampleTuit);
+        // const newUser = await createUser(ripley);
+        const newUser = await findUserByCredentials({username: ripley.username, password: ripley.password});
+        newTuit = await createTuit(newUser._id, sampleTuit);
 
         // verify inserted tuit's properties match parameter tuit
         expect(newTuit.tuit).toEqual(sampleTuit.tuit);
@@ -54,13 +64,12 @@ describe('can delete tuit wtih REST API', () => {
     const sampleTuit = {
         tuit: "test tuit",
         postedOn: "2021-12-25T05:00:00.000Z",
-        postedBy: "thommas_sowell"
     };
 
     // setup the tests before verification
     beforeAll(() => {
-        // remove any/all users to make sure we create it in the test
-        return deleteUsersByUsername(sowell.username);
+        // create user to insert tuit
+        return createUser(sowell);
     });
 
     // clean up after test runs
@@ -71,8 +80,8 @@ describe('can delete tuit wtih REST API', () => {
 
     test('can delete tuit from REST API by tuit id tid', async () => {
 
-        // insert new user in the database
-        const newUser = await createUser(sowell);
+        // Get user from the database
+        const newUser = await findUserByCredentials({username: sowell.username, password: sowell.password});
         // Insert a new tuit for user sowell
         const newTuit = await createTuit(newUser._id, sampleTuit);
         // delete a user by their username. Assumes user already exists
@@ -84,6 +93,8 @@ describe('can delete tuit wtih REST API', () => {
 });
 
 describe('can retrieve a tuit by their primary key with REST API', () => {
+    // var newTuit to have it accessed globally
+    var newTuit;
 
     // sample user
     const sowell = {
@@ -96,24 +107,24 @@ describe('can retrieve a tuit by their primary key with REST API', () => {
     const sampleTuit = {
         tuit: "test tuit",
         postedOn: "2021-12-25T05:00:00.000Z",
-        postedBy: "thommas_sowell"
     };
 
     // setup the tests before verification
     beforeAll(() => {
-        // remove any/all users to make sure we create it in the test
-        return deleteUsersByUsername(sowell.username);
+        // create users
+        return createUser(sowell);
     });
 
     // clean up after test runs
-    afterAll(() => {
+    afterAll(async () => {
         // remove any data we created
-        return deleteUsersByUsername(sowell.username);
+        await deleteTuit(newTuit._id);
+        return await deleteUsersByUsername(sowell.username);
     })
 
     test('can retrieve tuit from REST API by primary key', async () => {
         // insert the user in the database
-        const newUser = await createUser(sowell);
+        const newUser = await findUserByCredentials({username: sowell.username, password: sowell.password});
 
         // verify new user matches the parameter user
         expect(newUser.username).toEqual(sowell.username);
@@ -121,7 +132,7 @@ describe('can retrieve a tuit by their primary key with REST API', () => {
         expect(newUser.email).toEqual(sowell.email);
 
         // Insert a new tuit for user sowell
-        const newTuit = await createTuit(newUser._id, sampleTuit);
+        newTuit = await createTuit(newUser._id, sampleTuit);
 
         // verify inserted tuit's properties match parameter tuit
         expect(newTuit.tuit).toEqual(sampleTuit.tuit);
@@ -135,13 +146,14 @@ describe('can retrieve a tuit by their primary key with REST API', () => {
         expect(existingTuit.tuit).toEqual(sampleTuit.tuit);
         expect(existingTuit.postedOn).toEqual(sampleTuit.postedOn);
         expect(existingTuit.postedBy).toEqual(newUser);
-
-        deleteTuit(newTuit._id)
     });
 
 });
 
 describe('can retrieve all tuits with REST API', () => {
+    // var Tuit to have it accessed globally
+    var sowellNewTuit;
+    var maxNewTuit;
 
     // sample user
     const sowell = {
@@ -161,38 +173,38 @@ describe('can retrieve all tuits with REST API', () => {
     const sampleTuit = {
         tuit: "test tuit",
         postedOn: "2021-12-25T05:00:00.000Z",
-        postedBy: "thommas_sowell"
     };
 
     // sample tuit
     const maxTuit = {
         tuit: "max test tuit",
         postedOn: "2021-12-25T05:00:00.000Z",
-        postedBy: "max"
     };
 
     // setup the tests before verification
     beforeAll(() => {
         // remove any/all users to make sure we create it in the test
-        deleteUsersByUsername(max.username);
-        deleteUsersByUsername(sowell.username);
+        createUser(max);
+        createUser(sowell);
     });
 
     // clean up after test runs
-    afterAll(() => {
+    afterAll(async () => {
         // remove any data we created
-        deleteUsersByUsername(max.username);
-        deleteUsersByUsername(sowell.username);
+        await deleteTuit(sowellNewTuit._id)
+        await deleteTuit(maxNewTuit._id)
+        await deleteUsersByUsername(max.username);
+        await deleteUsersByUsername(sowell.username);
     })
 
     test('can retrieve tuit from REST API by primary key', async () => {
         // insert the user in the database
-        const sowellUser = await createUser(sowell);
-        const maxUser = await createUser(max);
+        const sowellUser = await findUserByCredentials({username: sowell.username, password: sowell.password});
+        const maxUser = await findUserByCredentials({username: max.username, password: max.password});
 
         // Insert a new tuit for user sowell
-        const sowellNewTuit = await createTuit(sowellUser._id, sampleTuit);
-        const maxNewTuit = await createTuit(maxUser._id, maxTuit);
+        sowellNewTuit = await createTuit(sowellUser._id, sampleTuit);
+        maxNewTuit = await createTuit(maxUser._id, maxTuit);
 
         let tuits = await findAllTuits();
         const tempTuit = tuits.filter(tuit => tuit.postedBy._id == sowellUser._id)[0];
@@ -205,8 +217,5 @@ describe('can retrieve all tuits with REST API', () => {
         expect(tempTuit2.tuit).toEqual(maxNewTuit.tuit);
         expect(tempTuit2.postedOn).toEqual(maxNewTuit.postedOn);
         expect(tempTuit2.postedBy._id).toEqual(maxUser._id);
-
-        deleteTuit(sowellNewTuit._id)
-        deleteTuit(maxNewTuit._id)
     });
 });
