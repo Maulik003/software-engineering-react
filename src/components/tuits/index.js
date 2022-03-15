@@ -2,7 +2,7 @@ import React from "react";
 import './tuits.css';
 import Tuit from "./tuit";
 
-export const Tuits = ({tuits = [], deleteTuit}) => {
+function Tuits({tuits = [], deleteTuit}) {
     return (
         <div>
             <ul className="ttr-tuits list-group">
@@ -15,7 +15,7 @@ export const Tuits = ({tuits = [], deleteTuit}) => {
                 }
             </ul>
         </div>
-    )
-};
+    );
+}
 
 export default Tuits;
