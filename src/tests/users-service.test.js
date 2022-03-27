@@ -65,7 +65,7 @@ describe('deleteUsersByUsername', () => {
     });
 });
 
-describe('findUserById', () => {
+describe('findUserById',  () => {
     // sample user we want to retrieve
     const adam = {
         username: 'adam_smith',
@@ -105,7 +105,7 @@ describe('findUserById', () => {
 });
 
 
-describe('findAllUsers', () => {
+describe('findAllUsers',  () => {
 
     // sample users we'll insert to then retrieve
     const usernames = [
@@ -127,9 +127,9 @@ describe('findAllUsers', () => {
     // clean up after ourselves
     afterAll(() =>
         // delete the users we inserted
-        Promise.all(usernames.map(username =>
+        usernames.map(username =>
             deleteUsersByUsername(username)
-        ))
+        )
     );
 
     test('can retrieve all users from REST API', async () => {

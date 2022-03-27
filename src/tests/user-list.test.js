@@ -26,4 +26,3 @@ test('user list renders async', async () => {
     const linkElement = screen.getByText(/bob/i);
     expect(linkElement).toBeInTheDocument();
 });
-
