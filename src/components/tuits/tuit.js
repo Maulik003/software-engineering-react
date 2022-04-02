@@ -57,7 +57,7 @@ const Tuit = ({tuit, deleteTuit, likeTuit}) => {
                     tuit.image &&
                     <TuitImage tuit={tuit}/>
                 }
-                <TuitStats tuit={tuit}/>
+                <TuitStats tuit={tuit} likeTuit={likeTuit}/>
             </div>
         </li>
     );
